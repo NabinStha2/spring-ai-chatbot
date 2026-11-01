@@ -1,0 +1,6 @@
+$kind: collection
+name: Spring AI Chatbot
+description: Send JSON chat messages to the local Spring AI chatbot. The response is plain text.
+variables:
+  - key: base_url
+    value: 'http://localhost:8080'

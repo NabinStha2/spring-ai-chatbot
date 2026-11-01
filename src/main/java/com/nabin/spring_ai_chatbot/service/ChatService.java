@@ -1,5 +1,6 @@
 package com.nabin.spring_ai_chatbot.service;
 
+import com.nabin.spring_ai_chatbot.dto.ChatResponse;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
@@ -11,12 +12,12 @@ public class ChatService {
         this.chatClient = chatClientBuilder.build();
     }
 
-    public String chat(String message) {
-        return chatClient
-                .prompt()
-                .user(message)
-                .call()
-                .content();
+    public ChatResponse chat(String message) {
+        return new ChatResponse(chatClient
+                                        .prompt()
+                                        .user(message)
+                                        .call()
+                                        .content());
     }
 
 }
