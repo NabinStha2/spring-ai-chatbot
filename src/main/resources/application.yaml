@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: spring-ai-chatbot
+
+  ai:
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        model: llama3.2:3b
