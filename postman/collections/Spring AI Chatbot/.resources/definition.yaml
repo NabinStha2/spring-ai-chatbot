@@ -1,6 +1,4 @@
 $kind: collection
-name: Spring AI Chatbot
-description: Send JSON chat messages to the local Spring AI chatbot. The response is plain text.
+description: Local chat API powered by Spring AI and Ollama.
 variables:
-  - key: base_url
-    value: 'http://localhost:8080'
+  baseUrl: http://localhost:8080

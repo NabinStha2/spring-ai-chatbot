@@ -1,8 +1,7 @@
 $kind: http-request
-name: Chat
-order: 1000
+description: ""
+url: "{{baseUrl}}/api/v1/chat"
 method: POST
-url: "{{base_url}}/api/v1/chat"
 headers:
   Content-Type: application/json
   Accept: application/json
@@ -10,16 +9,9 @@ body:
   type: json
   content: |-
     {
-      "message": "What is my name?"
+      "conversationId": "chat-001",
+      "message": "Hello! Please introduce yourself."
     }
-scripts:
-  - type: afterResponse
-    code: |-
-      pm.test('returns HTTP 200', () => {
-        pm.response.to.have.status(200);
-      });
-      pm.test('returns a non-empty response field', () => {
-        const body = pm.response.json();
-        pm.expect(body.response).to.be.a('string').and.not.be.empty;
-      });
-    language: text/javascript
+settings: {}
+examples: ./.resources/chat.resources/examples
+order: 1000

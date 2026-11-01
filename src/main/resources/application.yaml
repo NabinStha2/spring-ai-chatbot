@@ -7,3 +7,10 @@ spring:
       base-url: http://localhost:11434
       chat:
         model: llama3.2:3b
+
+postman:
+  sync:
+    enabled: true
+    openapi-url: http://localhost:8080/v3/api-docs
+    spec-file: postman/openapi.json
+    collection-name: Spring AI Chatbot
