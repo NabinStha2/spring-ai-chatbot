@@ -1,0 +1,17 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/v1/chat/stream?conversationId=string&message=string"
+method: GET
+headers:
+  Accept: text/event-stream
+queryParams:
+  - key: conversationId
+    value: string
+    disabled: false
+    description: "(Required) "
+  - key: message
+    value: string
+    disabled: false
+    description: "(Required) "
+settings: {}
+order: 2000

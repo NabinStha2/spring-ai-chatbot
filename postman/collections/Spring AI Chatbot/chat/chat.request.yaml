@@ -13,5 +13,4 @@ body:
       "message": "Hello! Please introduce yourself."
     }
 settings: {}
-examples: ./.resources/chat.resources/examples
 order: 1000

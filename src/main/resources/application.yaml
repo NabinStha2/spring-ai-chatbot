@@ -14,3 +14,4 @@ postman:
     openapi-url: http://localhost:8080/v3/api-docs
     spec-file: postman/openapi.json
     collection-name: Spring AI Chatbot
+    collection-path: postman/collections/Spring AI Chatbot
