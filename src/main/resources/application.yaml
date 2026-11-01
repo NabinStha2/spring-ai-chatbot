@@ -15,3 +15,5 @@ postman:
     spec-file: postman/openapi.json
     collection-name: Spring AI Chatbot
     collection-path: postman/collections/Spring AI Chatbot
+    visualizer-request: chat/chat.request.yaml
+    visualizer-script: postman/scripts/chat-visualizer.js

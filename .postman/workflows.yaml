@@ -2,3 +2,5 @@ workflows:
   syncSpecToCollection:
     - spec: ../postman/openapi.json
       collection: ../postman/collections/Spring AI Chatbot
+      options:
+        folderStrategy: Tags

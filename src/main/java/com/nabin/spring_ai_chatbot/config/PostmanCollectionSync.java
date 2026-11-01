@@ -14,6 +14,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -36,6 +38,12 @@ public class PostmanCollectionSync {
 
     @Value("${postman.sync.collection-path}")
     private String collectionPath;
+
+    @Value("${postman.sync.visualizer-request}")
+    private String visualizerRequest;
+
+    @Value("${postman.sync.visualizer-script}")
+    private String visualizerScript;
 
     public PostmanCollectionSync(RestClient.Builder restClientBuilder) {
         this.restClient = restClientBuilder.build();
@@ -83,6 +91,7 @@ public class PostmanCollectionSync {
             }
 
             removeGeneratedExamples(stagingCollection);
+            addVisualizer(stagingCollection);
 
             Process lint = new ProcessBuilder(
                     "postman", "collection", "lint", stagingCollection.toString())
@@ -93,6 +102,7 @@ public class PostmanCollectionSync {
             }
 
             replaceCollection(stagingCollection, absoluteTarget, backupCollection);
+            updateWorkflowCollectionPath(absoluteTarget);
             logger.info("Updated Postman collection '{}'", collectionName);
         } catch (InterruptedException ex) {
             Thread
@@ -135,6 +145,25 @@ public class PostmanCollectionSync {
         }
     }
 
+    private void updateWorkflowCollectionPath(Path collection) throws Exception {
+        Path workflow = Path.of(".postman/workflows.yaml");
+        if (!Files.isRegularFile(workflow)) {
+            return;
+        }
+
+        Path workflowDirectory = workflow.toAbsolutePath().getParent();
+        String relativeCollection = workflowDirectory.relativize(collection.toAbsolutePath())
+                .toString()
+                .replace('\\', '/');
+        String contents = Files.readString(workflow);
+        Pattern collectionEntry = Pattern.compile("(?m)^(\\s*collection:\\s*).*$");
+        Matcher matcher = collectionEntry.matcher(contents);
+        if (matcher.find()) {
+            contents = matcher.replaceFirst(Matcher.quoteReplacement(matcher.group(1) + relativeCollection));
+            Files.writeString(workflow, contents);
+        }
+    }
+
     private void deleteTree(Path directory) throws Exception {
         if (!Files.exists(directory)) {
             return;
@@ -168,5 +197,32 @@ public class PostmanCollectionSync {
                 }
             }
         }
+    }
+
+    private void addVisualizer(Path collection) throws Exception {
+        Path requestFile = collection.resolve(visualizerRequest).normalize();
+        if (!requestFile.startsWith(collection.normalize())) {
+            throw new IllegalArgumentException("Visualizer request must be inside the generated collection");
+        }
+        if (!Files.isRegularFile(requestFile)) {
+            throw new IllegalStateException("Generated Postman request was not found: " + requestFile);
+        }
+
+        String request = Files.readString(requestFile).stripTrailing();
+        if (request.lines().anyMatch(line -> line.equals("scripts:"))) {
+            throw new IllegalStateException("Generated request already has scripts: " + requestFile);
+        }
+
+        String script = Files.readString(Path.of(visualizerScript)).strip();
+        String indentedScript = script.lines()
+                .map(line -> "      " + line)
+                .reduce((left, right) -> left + "\n" + right)
+                .orElse("");
+        String postResponseScript = "\nscripts:\n"
+                + "  - type: afterResponse\n"
+                + "    code: |-\n"
+                + indentedScript + "\n"
+                + "    language: text/javascript\n";
+        Files.writeString(requestFile, request + postResponseScript);
     }
 }
