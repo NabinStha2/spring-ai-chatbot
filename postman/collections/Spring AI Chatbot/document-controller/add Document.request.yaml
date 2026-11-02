@@ -1,0 +1,15 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/documents"
+method: POST
+headers:
+  Content-Type: application/json
+  Accept: "*/*"
+body:
+  type: json
+  content: |-
+    {
+      "content": "string"
+    }
+settings: {}
+order: 2000

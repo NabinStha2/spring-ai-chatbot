@@ -4,14 +4,23 @@ import com.nabin.spring_ai_chatbot.dto.ChatResponse;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.document.Document;
+import org.springframework.ai.vectorstore.SearchRequest;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ChatService {
     private final ChatClient chatClient;
+    private final VectorStore vectorStore;
 
-    public ChatService(ChatClient.Builder chatClientBuilder, ChatMemory chatMemory) {
+    public ChatService(ChatClient.Builder chatClientBuilder, ChatMemory chatMemory,
+                       VectorStore vectorStore) {
+        this.vectorStore = vectorStore;
         this.chatClient = chatClientBuilder
                 .defaultSystem("""
                                        You are a professional programming assistant.
@@ -55,8 +64,45 @@ public class ChatService {
     }
 
     public ChatResponse chat(String conversationId, String message) {
+        List<Document> documents = vectorStore.similaritySearch(
+                SearchRequest
+                        .builder()
+                        .query(message)
+                        .topK(3)
+                        .similarityThreshold(0.6)
+                        .build()
+                                                               );
+
+        if (documents.isEmpty()) {
+            return new ChatResponse(
+                    "I couldn't find relevant information in the uploaded documents to answer the question."
+            );
+        }
+
+        String context = documents
+                .stream()
+                .map(Document::getText)
+                .collect(Collectors.joining("\n\n"));
+
         return new ChatResponse(chatClient
                                         .prompt()
+                                        .system(system -> system
+                                                .text("""
+                                                              Answer the user's question using the following document context.
+                                                              
+                                                              DOCUMENT CONTEXT:
+                                                              {context}
+                                                              
+                                                              RULES:
+                                                              1. Answer only using information explicitly stated in the document context.
+                                                              2. Do not use your pretrained knowledge to add missing information.
+                                                              3. Do not introduce technical details, examples, explanations, or assumptions absent from the context.
+                                                              4. If the context only partially answers the question, explain only what is supported by the context.
+                                                              5. If the answer is not available in the context, clearly say so.
+                                                              6. Never invent information or claim that something comes from the documents when it does not.
+                                                              7. Use clear and beginner-friendly Markdown.
+                                                              """)
+                                                .param("context", context))
                                         .user(message)
                                         .advisors(advisor -> advisor.param(
                                                 ChatMemory.CONVERSATION_ID, conversationId))

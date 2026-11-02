@@ -1,17 +1,17 @@
 $kind: http-request
 description: ""
-url: "{{baseUrl}}/api/embeddings/calculate-cosine-similarity?textA=1. The weather is sunny today.&textB=Java supports classes and objects."
+url: "{{baseUrl}}/api/embeddings/calculate-cosine-similarity?textA=string&textB=string"
 method: POST
 headers:
   Accept: "*/*"
 queryParams:
   - key: textA
-    value: 1. The weather is sunny today.
+    value: string
     disabled: false
-    description: ""
+    description: "(Required) "
   - key: textB
-    value: Java supports classes and objects.
+    value: string
     disabled: false
-    description: ""
+    description: "(Required) "
 settings: {}
 order: 2000

@@ -1,0 +1,8 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/documents/all"
+method: GET
+headers:
+  Accept: "*/*"
+settings: {}
+order: 5000

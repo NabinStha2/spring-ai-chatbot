@@ -1,0 +1,13 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/documents/:documentId"
+method: DELETE
+headers:
+  Accept: "*/*"
+pathVariables:
+  - key: documentId
+    value: string
+    disabled: false
+    description: "(Required) "
+settings: {}
+order: 6000

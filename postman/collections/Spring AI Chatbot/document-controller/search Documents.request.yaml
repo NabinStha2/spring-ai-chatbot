@@ -1,0 +1,16 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/documents/search?query=string&topK=3"
+method: GET
+headers:
+  Accept: "*/*"
+queryParams:
+  - key: query
+    value: string
+    disabled: false
+    description: "(Required) "
+  - key: topK
+    value: "3"
+    disabled: false
+settings: {}
+order: 4000

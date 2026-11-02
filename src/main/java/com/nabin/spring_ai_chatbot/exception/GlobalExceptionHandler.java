@@ -35,6 +35,22 @@ public class GlobalExceptionHandler {
                              HttpStatus.BAD_REQUEST, fieldErrors);
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleResourceNotFound(
+            ResourceNotFoundException exception
+                                                                  ) {
+        ApiErrorResponse errorResponse = new ApiErrorResponse(
+                "RESOURCE_NOT_FOUND",
+                "Resource not found",
+                HttpStatus.NOT_FOUND.value(),
+                List.of()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(errorResponse);
+    }
+
     @ExceptionHandler(Exception.class)
     ResponseEntity<ApiErrorResponse> unexpected(
             Exception ex,
@@ -47,6 +63,7 @@ public class GlobalExceptionHandler {
                 List.of()
                             );
     }
+
 
     private ResponseEntity<ApiErrorResponse> buildResponse(String errorCode, String message,
                                                            HttpStatus status,

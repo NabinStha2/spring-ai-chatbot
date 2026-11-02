@@ -1,0 +1,11 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/documents?page=0&size=10"
+method: GET
+headers:
+  Accept: "*/*"
+queryParams:
+  page: "0"
+  size: "10"
+settings: {}
+order: 1000
