@@ -139,30 +139,4 @@ public class DocumentService {
                 totalPages
         );
     }
-
-//    public void deleteDocument(String documentId) {
-//
-//        List<Document> documents = vectorStore.similaritySearch(
-//                SearchRequest
-//                        .builder()
-//                        .query(" ")
-//                        .topK(1000)
-//                        .similarityThresholdAll()
-//                        .build()
-//                                                               );
-//
-//        List<String> ids = documents
-//                .stream()
-//                .filter(document -> documentId.equals(
-//                        document
-//                                .getMetadata()
-//                                .get("parent_document_id")
-//                                                     ))
-//                .map(Document::getId)
-//                .toList();
-//
-//        if (!ids.isEmpty()) {
-//            vectorStore.delete(ids);
-//        }
-//    }
 }
